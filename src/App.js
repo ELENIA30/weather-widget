@@ -1,24 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+
+import { Intro } from "./components/intro";
+import { Cities } from "./components/cities";
+import { Weather } from "./components/weather";
+
+import "./App.css";
+
+const apiKey = "1d00d4c9d5554bbb1fc814776caff71d";
 
 function App() {
+  const [location, setLocation] = useState("--N/A--");
+  const [temp, setTemp] = useState(0);
+  const [status, setStatus] = useState("--N/A--");
+  const [icon,setIcon]= useState("src");
+
+  const update = async (value) => {
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${value}&appid=${apiKey}&units=metric`;
+    console.log(url);
+
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log(data);
+
+    setLocation(data.name);
+    setTemp(data.main.temp);
+    setStatus(data.weather[0].description);
+    setIcon(data.weather[0].icon);
+   
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <main className="container">
+      <Intro />
+      <Cities notify={update} />
+      <Weather location={location} temp={temp} status={status} icon= {icon}/>
+    </main>
   );
 }
 
